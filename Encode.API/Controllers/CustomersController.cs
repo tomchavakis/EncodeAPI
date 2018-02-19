@@ -12,6 +12,9 @@ using System.Web.Http.Description;
 
 namespace Encode.API.Controllers
 {
+    /// <summary>
+    /// Customer Class (GRUD) with API
+    /// </summary>
     [RoutePrefix("api/customers")]
     public class CustomersController : ApiController
     {
