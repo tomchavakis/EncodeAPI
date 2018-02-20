@@ -4,9 +4,9 @@
 
 This Project is a DEMO Web API Project. This Project Create a CRUD (Create-Read-Update-Delete) API Controller from a Customer Model. 
 
-When the Application Run for the First Time, will create a Dummy MySQL Database with the name Customers.
+When the Application Run for the First Time, it will be created a Dummy MySQL Database with the name Customers.
 
-This Application is a .NET Web API at .NET Framework 4.5.2 
+This Application is a .NET Web API targeted at .NET Framework 4.5.2 
 The API use 3rd party libraries like Swagger and log4net.
 Unit tests created with NUnit Framework.
 
@@ -31,9 +31,19 @@ https://dev.mysql.com/downloads/windows/visualstudio/
 
 It is mandatory to use your relevant settings at the Web.Config file. Change Only the server,uid and password variables.
 
+<pre>
   <connectionStrings>
     <add name="EncodeContext" providerName="MySql.Data.MySqlClient" connectionString="server=localhost;port=3306;database=customers;uid=tomchavakis;password=******" />
   </connectionStrings>
+</pre>
+
+## Logging
+
+The Location for the Logs exist at the App_Data\Logs folder.
+The Logging mechanism based on the Web.Config file. Every Day it will be created new Logging Files.
+Moreover Logs are integrated with the Entity Framework. You can observe the timings and the SQL Queries that occured. This mechanism is very important in case that
+you suspect that there is something wrong with the MySQL Queries. 
+
 
 ## Unit Tests
  
@@ -42,9 +52,9 @@ It is mandatory to use your relevant settings at the Web.Config file. Change Onl
  ## Client Tests
 
 If you use POSTMAN then at the App_Data folder you will find the Encode.postman_collection.json 
-Try to import this collection to use POSTMAN client for easy client testing.  
+Try to import this collection at your POSTMAN client for easy client testing.  
 
-After you import the collection then select one by one the functions and observe the results of them.
+After you import the collection then select and run one by one the functions and observe the results of them.
 
 You will find GET, POST, PUT and DELETE API Calls.
 At POST and PUT calls don't forget to check the body of each function in case that you like to change the variables.    
