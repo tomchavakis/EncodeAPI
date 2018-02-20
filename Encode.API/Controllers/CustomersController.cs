@@ -1,18 +1,15 @@
 ﻿using Encode.Models;
-using Encode.Repository;
 using Encode.API.Properties;
-using MySql.Data;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Net.Http;
+using System.Data.Entity;
 
 namespace Encode.API.Controllers
 {
@@ -37,9 +34,10 @@ namespace Encode.API.Controllers
             {
                 using (EncodeContext db = new EncodeContext())
                 {
-                    CustomersRepository customersRepository = new CustomersRepository(db);
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
 
-                    List<Customer> list = await customersRepository.GetCustomers();
+                    List<Customer> list = await db.Customers.ToListAsync();
 
                     log.Debug(string.Format("GetCustomers()='{0}'", JsonConvert.SerializeObject(list.Count, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
                     return Request.CreateResponse<List<Customer>>(HttpStatusCode.OK, list);
@@ -67,8 +65,10 @@ namespace Encode.API.Controllers
             {
                 using (EncodeContext db = new EncodeContext())
                 {
-                    CustomersRepository customersRepository = new CustomersRepository(db);
-                    Customer customer = await customersRepository.GetCustomerById(id);
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
+
+                    Customer customer = await db.Customers.FindAsync(id);
 
                     if (customer == null)
                     {
@@ -117,8 +117,10 @@ namespace Encode.API.Controllers
             {
                 using (EncodeContext db = new EncodeContext())
                 {
-                    CustomersRepository customersRepository = new CustomersRepository(db);
-                    customersRepository.CreateCustomer(customer);
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
+
+                    db.Customers.Add(customer);
 
                     await db.SaveChangesAsync();
 
@@ -170,11 +172,8 @@ namespace Encode.API.Controllers
             }
             try
             {
-
                 using (EncodeContext db = new EncodeContext())
                 {
-                    if (Settings.Default.DumpSQL)
-                        db.Database.Log = m => log.Info(m);
 
                     Customer item = await db.Customers.FindAsync(id);
 
@@ -236,7 +235,7 @@ namespace Encode.API.Controllers
         [Route("{id}")]
         [HttpDelete]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> DeleteCustomer(int id)
+        public async Task<HttpResponseMessage> DeleteCustomer(int id)
         {
             log.Debug(string.Format("DeleteCustomer({0})", JsonConvert.SerializeObject(id, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
             try
@@ -246,7 +245,7 @@ namespace Encode.API.Controllers
                     Customer customer = db.Customers.Find(id);
                     if (customer == null)
                     {
-                        return NotFound();
+                        return this.Request.CreateResponse(HttpStatusCode.NotFound, "Invalid Id");
                     }
 
                     db.Customers.Remove(customer);
@@ -276,13 +275,13 @@ namespace Encode.API.Controllers
                     #endregion
 
                     log.Debug(string.Format("DeleteCustomer({0})=", JsonConvert.SerializeObject(customer, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-                    return Ok(customer);
+                    return Request.CreateResponse<Customer>(HttpStatusCode.OK, customer);
                 }
             }
             catch (Exception ex)
             {
                 log.Debug(string.Format("DeleteCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-                return InternalServerError(ex);
+                return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
 
 

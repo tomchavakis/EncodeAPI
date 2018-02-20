@@ -75,11 +75,9 @@ namespace Encode.UnitTests
                 Title = "Test - Customer"
             };
 
-            Customer response = _client.CreateCustomer(basePath, customer).Result;
+            HttpResponseMessage response = _client.CreateCustomer(basePath, customer).Result;
             Assert.IsNotNull(response);
-            Assert.That(response.NumberOfEmployees, Is.EqualTo(5000));
-            Assert.That(response.Title, Is.EqualTo("Test - Customer"));
-
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.Created);
         }
 
 
@@ -87,7 +85,7 @@ namespace Encode.UnitTests
         [Order(5)]
         [Category("CreateCustomer")]
 
-        public void CreateCustomer_NumberOfEmployeesError_ReturnNonBadRequest()
+        public void CreateCustomer_InvalidNumberOfEmployees_ReturnNonBadRequest()
         {
             Customer customer = new Customer()
             {
@@ -95,7 +93,7 @@ namespace Encode.UnitTests
                 Title = "Test - Non Valid Customer"
             };
 
-            HttpResponseMessage response = _client.CreateRMCustomer(basePath, customer).Result;
+            HttpResponseMessage response = _client.CreateCustomer(basePath, customer).Result;
             Assert.IsNotNull(response);
             Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
             Assert.That(response.ReasonPhrase.Contains("Value for NumberOfEmployees must be between 0 and 10000."));
@@ -115,7 +113,7 @@ namespace Encode.UnitTests
                 Title = invalidTitle
             };
 
-            HttpResponseMessage response = _client.CreateRMCustomer(basePath, customer).Result;
+            HttpResponseMessage response = _client.CreateCustomer(basePath, customer).Result;
             Assert.IsNotNull(response);
             Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
             Assert.That(response.ReasonPhrase.Contains("Title must be 200 characters or less"));
@@ -128,19 +126,125 @@ namespace Encode.UnitTests
         public void CreateCustomer_Null_ReturnBadRequest()
         {
             Customer customer = null;
-            HttpResponseMessage response = _client.CreateRMCustomer(basePath, customer).Result;
+            HttpResponseMessage response = _client.CreateCustomer(basePath, customer).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
+            Assert.That(response.ReasonPhrase.Contains("Customer Cannot be null"));
+        }
+
+        [Test]
+        [Order(8)]
+        [Category("UpdateCustomer")]
+        public void UpdateCustomer_Valid_ReturnNoContent()
+        {
+            int updateId = 6;
+
+            Customer customer = new Customer
+            {
+                Title = "Updated Id",
+                NumberOfEmployees = 500
+            };
+            HttpResponseMessage response = _client.UpdateCustomer(basePath, updateId, customer).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.NoContent);
+        }
+
+        [Test]
+        [Order(9)]
+        [Category("UpdateCustomer")]
+        public void UpdateCustomer_NotExist_ReturnNotFoundAndInvalidId()
+        {
+            int updateId = 250;
+
+            Customer customer = new Customer
+            {
+                Title = "Updated Id2",
+                NumberOfEmployees = 500
+            };
+            HttpResponseMessage response = _client.UpdateCustomer(basePath, updateId, customer).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.NotFound);
+            Assert.That(response.ReasonPhrase.Contains("Invalid Id"));
+        }
+
+
+        [Test]
+        [Order(10)]
+        [Category("UpdateCustomer")]
+        public void UpdateCustomer_Null_ReturnBadRequest()
+        {
+            int updateId = 6;
+
+            Customer customer = null;
+            HttpResponseMessage response = _client.UpdateCustomer(basePath, updateId, customer).Result;
             Assert.IsNotNull(response);
             Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
             Assert.That(response.ReasonPhrase.Contains("Customer Cannot be null"));
         }
 
 
+        [Test]
+        [Order(11)]
+        [Category("UpdateCustomer")]
+        public void UpdateCustomer_InvalidNumberOfEmployees_ReturnNonBadRequest()
+        {
+            int updateId = 6;
 
+            Customer customer = new Customer()
+            {
+                NumberOfEmployees = 50000,
+                Title = "Test - Non Valid Customer"
+            };
 
+            HttpResponseMessage response = _client.UpdateCustomer(basePath, updateId, customer).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
+            Assert.That(response.ReasonPhrase.Contains("Value for NumberOfEmployees must be between 0 and 10000."));
+        }
 
+        [Test]
+        [Order(12)]
+        [Category("CreateCustomer")]
 
+        public void UpdateCustomer_InvalidTitle_ReturnBadRequest()
+        {
+            int updateId = 6;
+            string invalidTitle = new string('a', 500);
 
+            Customer customer = new Customer()
+            {
+                NumberOfEmployees = 200,
+                Title = invalidTitle
+            };
 
+            HttpResponseMessage response = _client.UpdateCustomer(basePath, updateId, customer).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
+            Assert.That(response.ReasonPhrase.Contains("Title must be 200 characters or less"));
+        }
+
+        [Test]
+        [Order(13)]
+        [Category("DeleteCustomer")]
+        public void DeleteCustomer_ValidId_ReturnDeleted()
+        {
+            int deleteId = 10;
+            HttpResponseMessage response = _client.DeleteCustomer(basePath, deleteId).Result;
+            Assert.NotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.OK);
+        }
+
+        [Test]
+        [Order(14)]
+        [Category("DeleteCustomer")]
+        public void DeleteCustomer_InvalidId_ReturnNotFound()
+        {
+            int deleteId = 500;
+            HttpResponseMessage response = _client.DeleteCustomer(basePath, deleteId).Result;
+            Assert.IsNotNull(response);
+            Assert.That(response.StatusCode == System.Net.HttpStatusCode.NotFound);
+            Assert.That(response.ReasonPhrase.Contains("Invalid Id"));
+        }
 
     }
 }

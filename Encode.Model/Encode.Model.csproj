@@ -78,7 +78,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Repository\CustomersRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

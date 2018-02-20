@@ -47,18 +47,8 @@ namespace Encode.Client
                 return await client.MethodGet<Customer>(basePath, methodUrl);
             }
         }
-
-        public async Task<Customer> CreateCustomer(string basePath, Customer customer)
-        {
-            string apiPath = "{0}/customers";
-            string methodUrl = string.Format(apiPath, basePath);
-            using (HttpClient client = new HttpClient())
-            {
-                return await client.MethodPost<Customer, Customer>(basePath, methodUrl, customer);
-            }
-        }
-
-        public async Task<HttpResponseMessage> CreateRMCustomer(string basePath, Customer customer)
+        
+        public async Task<HttpResponseMessage> CreateCustomer(string basePath, Customer customer)
         {
             string apiPath = "{0}/customers";
             string methodUrl = string.Format(apiPath, basePath);
@@ -67,6 +57,27 @@ namespace Encode.Client
                 return await client.MethodPost<Customer>(basePath, methodUrl, customer);
             }
         }
+
+        public async Task<HttpResponseMessage> UpdateCustomer(string basePath, int id, Customer customer)
+        {
+            string apiPath = "{0}/customers/{1}";
+            string methodUrl = string.Format(apiPath, basePath, id);
+            using (HttpClient client = new HttpClient())
+            {
+                return await client.MethodPut<Customer>(basePath, methodUrl, customer);
+            }
+        }
+
+        public async Task<HttpResponseMessage> DeleteCustomer(string basePath, int id)
+        {
+            string apiPath = "{0}/customers/{1}";
+            string methodUrl = string.Format(apiPath, basePath, id);
+            using (HttpClient client = new HttpClient())
+            {
+                return await client.MethodDelete(basePath, methodUrl);
+            }
+        }
+
 
     }
 }
