@@ -1,38 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Linq;
-using System.Web;
 
-namespace Encode.API.Models
+namespace Encode.Models
 {
     /// <summary>
     /// Initialize the Database with Sample Data
     /// </summary>
-    public class CustomerInitializater : CreateDatabaseIfNotExists<CustomerContext>
+    public class EncodeInitializer : CreateDatabaseIfNotExists<EncodeContext>
     {
         public static void DatabaseInitialization()
         {
-            using (CustomerContext db = new CustomerContext())
+            using (EncodeContext db = new EncodeContext())
             {
                 db.Database.Initialize(true);
             }
         }
 
-        public override void InitializeDatabase(CustomerContext context)
-        {
+        //public  void InitializeDatabase(EncodeContext context)
+        //{
 
-            base.InitializeDatabase(context);
-        }
+        //    base.InitializeDatabase(context);
+        //}
 
-        protected override void Seed(CustomerContext context)
+        protected override void Seed(EncodeContext context)
         {
             AddData(context);
         }
 
-        public void AddData(CustomerContext context)
+        public void AddData(EncodeContext context)
         {
             IList<Customer> customers = new List<Customer>();
 

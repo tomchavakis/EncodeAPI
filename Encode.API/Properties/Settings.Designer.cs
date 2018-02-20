@@ -31,5 +31,14 @@ namespace Encode.API.Properties {
                 return ((bool)(this["Tracing"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DumpSQL {
+            get {
+                return ((bool)(this["DumpSQL"]));
+            }
+        }
     }
 }

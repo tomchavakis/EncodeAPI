@@ -1,8 +1,10 @@
-﻿using Encode.API.Models;
+﻿using Encode.Models;
+using Encode.API.Properties;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
@@ -18,9 +20,11 @@ namespace Encode.API.Controllers
     [RoutePrefix("api/customers")]
     public class CustomersController : ApiController
     {
+
+
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private CustomerContext db = new CustomerContext();
+        //private EncodeContext db = new EncodeContext();
 
         /// <summary>
         /// Get All the Customer
@@ -28,11 +32,26 @@ namespace Encode.API.Controllers
         /// <returns>List of Customers</returns>
         // GET: api/Customers
         [Route("")]
-        public IQueryable<Customer> GetCustomers()
+        public async Task<IHttpActionResult> GetCustomers()
         {
             log.Debug(string.Format("GetCustomers()"));
+            try
+            {
+                using (EncodeContext db = new EncodeContext())
+                {
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
 
-            return db.Customers;
+                    List<Customer> list = db.Customers.ToList();
+                    log.Debug(string.Format("GetCustomers()='{0}'", JsonConvert.SerializeObject(list.Count, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                    return Ok(list);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Debug(string.Format("GetCustomers()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                return InternalServerError(ex);
+            }
         }
 
         /// <summary>
@@ -46,17 +65,32 @@ namespace Encode.API.Controllers
         public async Task<IHttpActionResult> GetCustomer(int id)
         {
             log.Debug(string.Format("GetCustomer({0})", JsonConvert.SerializeObject(id, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-
-            Customer customer = await db.Customers.FindAsync(id);
-            if (customer == null)
+            try
             {
-                log.Debug(string.Format("GetCustomer({0}):{1}", id, "NotFound"));
-                return NotFound();
+                using (EncodeContext db = new EncodeContext())
+                {
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
+
+                    Customer customer = await db.Customers.FindAsync(id);
+                    if (customer == null)
+                    {
+                        log.Debug(string.Format("GetCustomer({0}):{1}", id, "NotFound"));
+                        return NotFound();
+                    }
+
+                    log.Debug(string.Format("GetCustomer()='{0}'", JsonConvert.SerializeObject(customer, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+
+                    return Ok(customer);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Debug(string.Format("GetCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                return InternalServerError(ex);
             }
 
-            log.Debug(string.Format("GetCustomer()='{0}'", JsonConvert.SerializeObject(customer, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
 
-            return Ok(customer);
         }
 
         /// <summary>
@@ -77,10 +111,21 @@ namespace Encode.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Customers.Add(customer);
             try
             {
-                await db.SaveChangesAsync();
+                using (EncodeContext db = new EncodeContext())
+                {
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
+
+                    db.Customers.Add(customer);
+
+                    await db.SaveChangesAsync();
+                    if (customer != null)
+                    {
+                        return CreatedAtRoute("DefaultApi", new { id = customer.Id }, customer);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -88,7 +133,7 @@ namespace Encode.API.Controllers
                 return InternalServerError(ex);
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = customer.Id }, customer);
+            return BadRequest();
         }
 
         /// <summary>
@@ -99,7 +144,7 @@ namespace Encode.API.Controllers
         /// <returns>NoContent Status Code - 204</returns>
         // PUT: api/Customers/5
         [HttpPut]
-        [HttpPatch]
+        //[HttpPatch]
         [Route("{id}")]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutCustomer(int id, Customer customer)
@@ -117,30 +162,63 @@ namespace Encode.API.Controllers
                 log.Debug(string.Format("PutCustomer()= NotFound{0}", JsonConvert.SerializeObject(id, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
                 return NotFound();
             }
-
-            //MySql - Entity Framework update all the rows of the table so I use T-SQL Commands for the updating
-            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["CustomerContext"].ConnectionString;
-            using (MySqlConnection cn = new MySqlConnection(connectionString))
+            try
             {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = cn;
-                string query = string.Format("UPDATE {0} SET Title = '{1}', NumberOfEmployees={2} WHERE Id = {3}", "customers.customer", customer.Title, customer.NumberOfEmployees, id);
-                cmd.CommandText = query;
-                try
+
+                using (EncodeContext db = new EncodeContext())
                 {
-                    cn.Open();
-                    int numRowsUpdated = cmd.ExecuteNonQuery();
-                    cmd.Dispose();
-                }
-                catch (MySql.Data.MySqlClient.MySqlException ex)
-                {
-                    log.Debug(string.Format("PutCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-                    return InternalServerError(ex);
+                    if (Settings.Default.DumpSQL)
+                        db.Database.Log = m => log.Info(m);
+
+                    Customer item = await db.Customers.FindAsync(id);
+
+                    if (item != null)
+                    {
+                        item.NumberOfEmployees = customer.NumberOfEmployees;
+                        item.Title = customer.Title;
+
+                        await db.SaveChangesAsync();
+                        log.Debug(string.Format("PutCustomer({0})", JsonConvert.SerializeObject("Modified", Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                        return StatusCode(HttpStatusCode.NoContent);
+                    }
+
+                    return NotFound();
                 }
 
-                log.Debug(string.Format("PutCustomer({0})", JsonConvert.SerializeObject("Modified", Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-                return StatusCode(HttpStatusCode.NoContent);
+                #region ' Faulted MySQL Provider '
+                //MySql - Entity Framework update all the rows of the table so I use T-SQL Commands for the updating
+                //string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["EncodeContext"].ConnectionString;
+                //using (MySqlConnection cn = new MySqlConnection(connectionString))
+                //{
+                //    MySqlCommand cmd = new MySqlCommand();
+                //    cmd.Connection = cn;
+                //    string query = string.Format("UPDATE {0} SET Title = '{1}', NumberOfEmployees={2} WHERE Id = {3}", "customers.customer", customer.Title, customer.NumberOfEmployees, id);
+                //    cmd.CommandText = query;
+                //    try
+                //    {
+                //        cn.Open();
+                //        int numRowsUpdated = cmd.ExecuteNonQuery();
+                //        cmd.Dispose();
+                //    }
+                //    catch (MySql.Data.MySqlClient.MySqlException ex)
+                //    {
+                //        log.Debug(string.Format("PutCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                //        return InternalServerError(ex);
+                //    }
+
+                //    log.Debug(string.Format("PutCustomer({0})", JsonConvert.SerializeObject("Modified", Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                //    return StatusCode(HttpStatusCode.NoContent);
+                //}
+                #endregion
+
             }
+            catch (Exception ex)
+            {
+                log.Debug(string.Format("PutCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                return InternalServerError(ex);
+            }
+
+
         }
 
 
@@ -153,55 +231,64 @@ namespace Encode.API.Controllers
         [Route("{id}")]
         [HttpDelete]
         [ResponseType(typeof(Customer))]
-        public IHttpActionResult DeleteCustomer(int id)
+        public async Task<IHttpActionResult> DeleteCustomer(int id)
         {
             log.Debug(string.Format("DeleteCustomer({0})", JsonConvert.SerializeObject(id, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-
-            Customer customer = db.Customers.Find(id);
-            if (customer == null)
+            try
             {
-                return NotFound();
-            }
-
-            //MySql - Entity Framework update all the rows of the table so I use T-SQL Commands for the updating
-            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["CustomerContext"].ConnectionString;
-            using (MySqlConnection cn = new MySqlConnection(connectionString))
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = cn;
-                string query = string.Format("DELETE FROM {0} WHERE Id = {1}", "customers.customer", id);
-                cmd.CommandText = query;
-                try
+                using (EncodeContext db = new EncodeContext())
                 {
-                    cn.Open();
-                    int numRowsUpdated = cmd.ExecuteNonQuery();
-                    cmd.Dispose();
-                }
-                catch (MySql.Data.MySqlClient.MySqlException ex)
-                {
-                    log.Debug(string.Format("DeleteCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-                    return InternalServerError(ex);
+                    Customer customer = db.Customers.Find(id);
+                    if (customer == null)
+                    {
+                        return NotFound();
+                    }
+
+                    db.Customers.Remove(customer);
+                    await db.SaveChangesAsync();
+
+                    #region ' Faulted MySQL Provider '
+                    //MySql - Entity Framework update all the rows of the table so I use T-SQL Commands for the updating
+                    //string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["EncodeContext"].ConnectionString;
+                    //using (MySqlConnection cn = new MySqlConnection(connectionString))
+                    //{
+                    //    MySqlCommand cmd = new MySqlCommand();
+                    //    cmd.Connection = cn;
+                    //    string query = string.Format("DELETE FROM {0} WHERE Id = {1}", "customers.customer", id);
+                    //    cmd.CommandText = query;
+                    //    try
+                    //    {
+                    //        cn.Open();
+                    //        int numRowsUpdated = cmd.ExecuteNonQuery();
+                    //        cmd.Dispose();
+                    //    }
+                    //    catch (MySql.Data.MySqlClient.MySqlException ex)
+                    //    {
+                    //        log.Debug(string.Format("DeleteCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                    //        return InternalServerError(ex);
+                    //    }
+                    //}
+                    #endregion
+
+                    log.Debug(string.Format("DeleteCustomer({0})=", JsonConvert.SerializeObject(customer, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                    return Ok(customer);
                 }
             }
-
-
-            log.Debug(string.Format("DeleteCustomer({0})=", JsonConvert.SerializeObject(customer, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
-
-            return Ok(customer);
-        }
-        
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            catch (Exception ex)
             {
-                db.Dispose();
+                log.Debug(string.Format("DeleteCustomer()= Exception{0}", JsonConvert.SerializeObject(ex, Encode.API.Properties.Settings.Default.Tracing ? Formatting.Indented : Formatting.None)));
+                return InternalServerError(ex);
             }
-            base.Dispose(disposing);
+
+
         }
 
         private bool CustomerExists(int id)
         {
-            return db.Customers.Count(e => e.Id == id) > 0;
+            using (EncodeContext db = new EncodeContext())
+            {
+                return db.Customers.Count(e => e.Id == id) > 0;
+            }
         }
 
     }

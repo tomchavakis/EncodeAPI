@@ -481,6 +481,11 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:Encode.API.Controllers.CustomersController">
+            <summary>
+            Customer Class (GRUD) with API
+            </summary>
+        </member>
         <member name="M:Encode.API.Controllers.CustomersController.GetCustomers">
             <summary>
             Get All the Customer
@@ -494,14 +499,14 @@
             <param name="id">Id of the Customer</param>
             <returns>Customer - 200</returns>
         </member>
-        <member name="M:Encode.API.Controllers.CustomersController.PostCustomer(Encode.API.Models.Customer)">
+        <member name="M:Encode.API.Controllers.CustomersController.PostCustomer(Encode.Models.Customer)">
             <summary>
             Create a New Customer
             </summary>
             <param name="customer">Customer</param>
             <returns>Created Response with the Specified Values - 201</returns>
         </member>
-        <member name="M:Encode.API.Controllers.CustomersController.PutCustomer(System.Int32,Encode.API.Models.Customer)">
+        <member name="M:Encode.API.Controllers.CustomersController.PutCustomer(System.Int32,Encode.Models.Customer)">
             <summary>
             Update a specific Customer
             </summary>
@@ -515,31 +520,6 @@
             </summary>
             <param name="id">Id Of the Customer</param>
             <returns>Ok Message</returns>
-        </member>
-        <member name="P:Encode.API.Models.Customer.Id">
-            <summary>
-            Primary Key
-            </summary>
-        </member>
-        <member name="P:Encode.API.Models.Customer.Title">
-            <summary>
-            Title of the Customer
-            </summary>
-        </member>
-        <member name="P:Encode.API.Models.Customer.NumberOfEmployees">
-            <summary>
-            Number Of Employees per Customers
-            </summary>
-        </member>
-        <member name="P:Encode.API.Models.CustomerContact.Id">
-            <summary>
-            Primary Key
-            </summary>
-        </member>
-        <member name="T:Encode.API.Models.CustomerInitializater">
-            <summary>
-            Initialize the Database with Sample Data
-            </summary>
         </member>
     </members>
 </doc>

@@ -1,4 +1,4 @@
-﻿using Encode.API.Models;
+﻿using Encode.Models;
 using MySql.Data.Entity;
 using Swashbuckle.Application;
 using System;
@@ -22,8 +22,8 @@ namespace Encode.API
             log4net.Config.XmlConfigurator.Configure();
 
             DbConfiguration.SetConfiguration(new MySqlEFConfiguration());
-            Database.SetInitializer(new CustomerInitializater());
-            CustomerInitializater.DatabaseInitialization();
+            Database.SetInitializer(new EncodeInitializer());
+            EncodeInitializer.DatabaseInitialization();
 
     
             AreaRegistration.RegisterAllAreas();
