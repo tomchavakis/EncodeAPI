@@ -1,0 +1,306 @@
+{
+	"info": {
+		"name": "Encode",
+		"_postman_id": "46ef247d-d3e8-34f8-ff7f-f4ceaa4b1dca",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:50213/api/customers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Title\": \"Test\",\r\n  \"NumberOfEmployees\": 300\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:50213/api/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customer/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"1"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Title\": \"Test - 3000\",\r\n  \"NumberOfEmployees\": 3000\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers"
+					]
+				},
+				"description": "Validation Error - NumberOfEmployees"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers/5",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Id\":5,\r\n  \"Title\": \"Test Update 7\",\r\n  \"NumberOfEmployees\": 6756\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"5"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers/2",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"2"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers/600",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/600",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"600"
+					]
+				},
+				"description": "Invalid Id"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers/600",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/600",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"600"
+					]
+				},
+				"description": "Invalid ID"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Title\": \"Test s - 3000\",\r\n  \"NumberOfEmployees\": 300000\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers"
+					]
+				},
+				"description": "Validation Error - NumberOfEmployees"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Title\": \"Test\",\r\n  \"NumberOfEmployees\": 3000000\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers"
+					]
+				},
+				"description": "Invalid Number Of Employees"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:50213/api/customers/5",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Id\":50,\r\n  \"Title\": \"Test Update 8\",\r\n  \"NumberOfEmployees\": 6759\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:50213/api/customers/50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "50213",
+					"path": [
+						"api",
+						"customers",
+						"50"
+					]
+				},
+				"description": "Invalid Id"
+			},
+			"response": []
+		}
+	]
+}

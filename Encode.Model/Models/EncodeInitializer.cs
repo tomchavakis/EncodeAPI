@@ -17,12 +17,6 @@ namespace Encode.Models
             }
         }
 
-        //public  void InitializeDatabase(EncodeContext context)
-        //{
-
-        //    base.InitializeDatabase(context);
-        //}
-
         protected override void Seed(EncodeContext context)
         {
             AddData(context);

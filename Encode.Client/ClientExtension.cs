@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -131,7 +130,6 @@ namespace Encode.Client
         }
 
         #endregion
-
 
         #region ' Delete Methods '
         public static async Task<HttpResponseMessage> MethodDelete(this HttpClient client, string baseAddress, string apiPath)
