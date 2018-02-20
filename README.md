@@ -31,11 +31,11 @@ https://dev.mysql.com/downloads/windows/visualstudio/
 
 It is mandatory to use your relevant settings at the Web.Config file. Change Only the server,uid and password variables.
 
-<pre>
+'''
   <connectionStrings>
     <add name="EncodeContext" providerName="MySql.Data.MySqlClient" connectionString="server=localhost;port=3306;database=customers;uid=tomchavakis;password=******" />
   </connectionStrings>
-</pre>
+'''
 
 ## Logging
 
